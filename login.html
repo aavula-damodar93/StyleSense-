@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>StyleSense — Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #0d0d0d;
+      --cream: #f5f0e8;
+      --gold: #c9a84c;
+      --gold-light: #e8c96a;
+      --muted: #8a7f72;
+      --border: rgba(201,168,76,0.3);
+    }
+
+    body {
+      font-family: 'Jost', sans-serif;
+      background: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Animated background */
+    .bg-mesh {
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 50%, rgba(201,168,76,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 80% 20%, rgba(201,168,76,0.05) 0%, transparent 50%),
+        radial-gradient(ellipse 40% 40% at 60% 80%, rgba(201,168,76,0.04) 0%, transparent 50%);
+    }
+
+    .grid-lines {
+      position: fixed; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    /* Floating orbs */
+    .orb {
+      position: fixed; border-radius: 50%; filter: blur(80px); z-index: 0; pointer-events: none;
+      animation: drift 12s ease-in-out infinite alternate;
+    }
+    .orb-1 { width: 500px; height: 500px; background: rgba(201,168,76,0.06); top: -100px; left: -100px; animation-delay: 0s; }
+    .orb-2 { width: 400px; height: 400px; background: rgba(201,168,76,0.04); bottom: -80px; right: -80px; animation-delay: -6s; }
+
+    @keyframes drift {
+      from { transform: translate(0,0) scale(1); }
+      to   { transform: translate(40px, 30px) scale(1.1); }
+    }
+
+    /* Main card */
+    .login-wrap {
+      position: relative; z-index: 10;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      width: min(900px, 95vw);
+      min-height: 560px;
+      border: 1px solid var(--border);
+      background: rgba(13,13,13,0.85);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 40px 120px rgba(0,0,0,0.8), 0 0 0 1px rgba(201,168,76,0.1) inset;
+      animation: slideUp 0.9s cubic-bezier(.16,1,.3,1) both;
+    }
+
+    @keyframes slideUp {
+      from { opacity:0; transform: translateY(40px) scale(0.97); }
+      to   { opacity:1; transform: translateY(0) scale(1); }
+    }
+
+    /* Left panel */
+    .panel-left {
+      background: linear-gradient(135deg, #1a1408 0%, #0d0d0d 50%, #1a1408 100%);
+      padding: 60px 50px;
+      display: flex; flex-direction: column; justify-content: space-between;
+      border-right: 1px solid var(--border);
+      position: relative; overflow: hidden;
+    }
+
+    .panel-left::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .brand-mark {
+      display: flex; align-items: center; gap: 14px;
+    }
+
+    .brand-icon {
+      width: 44px; height: 44px;
+      border: 1.5px solid var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+
+    .brand-icon::after {
+      content: '';
+      position: absolute; inset: 4px;
+      border: 1px solid rgba(201,168,76,0.3);
+    }
+
+    .brand-icon svg { color: var(--gold); }
+
+    .brand-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: var(--cream);
+      letter-spacing: 0.05em;
+    }
+
+    .brand-sub {
+      font-size: 0.6rem;
+      color: var(--gold);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      font-weight: 300;
+    }
+
+    .panel-headline {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.8rem;
+      font-weight: 300;
+      color: var(--cream);
+      line-height: 1.2;
+    }
+
+    .panel-headline em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .panel-desc {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.7;
+      font-weight: 300;
+      letter-spacing: 0.02em;
+    }
+
+    .panel-features {
+      display: flex; flex-direction: column; gap: 14px;
+    }
+
+    .feature-item {
+      display: flex; align-items: center; gap: 12px;
+      opacity: 0;
+      animation: fadeInLeft 0.6s ease forwards;
+    }
+    .feature-item:nth-child(1) { animation-delay: 0.6s; }
+    .feature-item:nth-child(2) { animation-delay: 0.75s; }
+    .feature-item:nth-child(3) { animation-delay: 0.9s; }
+
+    @keyframes fadeInLeft {
+      from { opacity:0; transform: translateX(-10px); }
+      to   { opacity:1; transform: translateX(0); }
+    }
+
+    .feature-dot {
+      width: 6px; height: 6px;
+      background: var(--gold);
+      flex-shrink: 0;
+    }
+
+    .feature-text {
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* Right panel */
+    .panel-right {
+      padding: 60px 50px;
+      display: flex; flex-direction: column; justify-content: center;
+      gap: 28px;
+    }
+
+    .form-header h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 400;
+      color: var(--cream);
+      letter-spacing: 0.02em;
+    }
+
+    .form-header p {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 6px;
+      letter-spacing: 0.05em;
+    }
+
+    .form-divider {
+      height: 1px;
+      background: linear-gradient(90deg, var(--border), transparent);
+    }
+
+    .field-group {
+      display: flex; flex-direction: column; gap: 20px;
+    }
+
+    .field {
+      position: relative;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.65rem;
+      color: var(--gold);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      font-weight: 400;
+    }
+
+    .field input {
+      width: 100%;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(201,168,76,0.2);
+      color: var(--cream);
+      font-family: 'Jost', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 300;
+      padding: 13px 16px;
+      outline: none;
+      transition: all 0.3s ease;
+      letter-spacing: 0.05em;
+    }
+
+    .field input:focus {
+      border-color: var(--gold);
+      background: rgba(201,168,76,0.04);
+      box-shadow: 0 0 0 3px rgba(201,168,76,0.06);
+    }
+
+    .field input::placeholder { color: rgba(138,127,114,0.5); }
+
+    .field-icon {
+      position: absolute; right: 14px; bottom: 13px;
+      color: var(--muted); cursor: pointer;
+      font-size: 0.9rem; transition: color 0.2s;
+    }
+    .field-icon:hover { color: var(--gold); }
+
+    .form-options {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .remember {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 0.72rem; color: var(--muted); cursor: pointer;
+    }
+
+    .remember input[type="checkbox"] {
+      appearance: none; width: 14px; height: 14px;
+      border: 1px solid var(--border);
+      background: transparent; cursor: pointer;
+      position: relative;
+    }
+
+    .remember input[type="checkbox"]:checked::after {
+      content: '✓';
+      position: absolute; top: -2px; left: 1px;
+      font-size: 10px; color: var(--gold);
+    }
+
+    .forgot-link {
+      font-size: 0.72rem; color: var(--muted);
+      text-decoration: none; letter-spacing: 0.05em;
+      transition: color 0.2s;
+    }
+    .forgot-link:hover { color: var(--gold); }
+
+    .btn-login {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, var(--gold) 0%, #a8832a 100%);
+      border: none; cursor: pointer;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--ink);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      position: relative; overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .btn-login::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%);
+      opacity: 0; transition: opacity 0.3s;
+    }
+
+    .btn-login:hover::before { opacity: 1; }
+    .btn-login:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(201,168,76,0.3); }
+    .btn-login:active { transform: translateY(0); }
+
+    .btn-login span { position: relative; z-index: 1; }
+
+    .error-msg {
+      color: #e87070;
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+      display: none;
+      padding: 10px 14px;
+      background: rgba(232,112,112,0.08);
+      border: 1px solid rgba(232,112,112,0.2);
+    }
+
+    .signup-link {
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    .signup-link a {
+      color: var(--gold);
+      text-decoration: none;
+      font-weight: 400;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .login-wrap { grid-template-columns: 1fr; }
+      .panel-left { display: none; }
+      .panel-right { padding: 40px 30px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-mesh"></div>
+  <div class="grid-lines"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <div class="login-wrap">
+    <!-- Left Panel -->
+    <div class="panel-left">
+      <div class="brand-mark">
+        <div class="brand-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-name">StyleSense</div>
+          <div class="brand-sub">Generative AI Fashion</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="panel-headline">
+          Dress with<br/><em>Intelligence</em>
+        </div>
+        <p class="panel-desc" style="margin-top:16px;">
+          Your personal AI stylist learns your taste and curates outfits that elevate every occasion.
+        </p>
+      </div>
+
+      <div class="panel-features">
+        <div class="feature-item">
+          <div class="feature-dot"></div>
+          <span class="feature-text">AI-Powered Style Matching</span>
+        </div>
+        <div class="feature-item">
+          <div class="feature-dot"></div>
+          <span class="feature-text">Event-Based Recommendations</span>
+        </div>
+        <div class="feature-item">
+          <div class="feature-dot"></div>
+          <span class="feature-text">Smart Wardrobe Management</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="panel-right">
+      <div class="form-header">
+        <h2>Welcome Back</h2>
+        <p>Sign in to your StyleSense account</p>
+      </div>
+
+      <div class="form-divider"></div>
+
+      <div id="errorMsg" class="error-msg">Invalid email or password. Please try again.</div>
+
+      <div class="field-group">
+        <div class="field">
+          <label>Email Address</label>
+          <input type="email" id="emailInput" placeholder="you@example.com" autocomplete="email"/>
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="passwordInput" placeholder="••••••••"/>
+          <span class="field-icon" onclick="togglePwd()" id="eyeIcon">👁</span>
+        </div>
+      </div>
+
+      <div class="form-options">
+        <label class="remember">
+          <input type="checkbox" id="rememberMe"/>
+          Remember me
+        </label>
+        <a href="#" class="forgot-link">Forgot password?</a>
+      </div>
+
+      <button class="btn-login" onclick="handleLogin()">
+        <span>Enter StyleSense</span>
+      </button>
+
+      <p class="signup-link">New to StyleSense? <a href="#">Create Account</a></p>
+    </div>
+  </div>
+
+  <script>
+    function togglePwd() {
+      const input = document.getElementById('passwordInput');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    function handleLogin() {
+      const email = document.getElementById('emailInput').value.trim();
+      const password = document.getElementById('passwordInput').value;
+      const errorMsg = document.getElementById('errorMsg');
+
+      if (!email || !password) {
+        errorMsg.textContent = 'Please enter both email and password.';
+        errorMsg.style.display = 'block';
+        return;
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        errorMsg.textContent = 'Please enter a valid email address.';
+        errorMsg.style.display = 'block';
+        return;
+      }
+
+      // Demo: any valid email + password (min 6 chars) logs in
+      if (password.length < 6) {
+        errorMsg.textContent = 'Password must be at least 6 characters.';
+        errorMsg.style.display = 'block';
+        return;
+      }
+
+      errorMsg.style.display = 'none';
+
+      // Save user session
+      localStorage.setItem('ss_user', email);
+      localStorage.setItem('ss_name', email.split('@')[0]);
+
+      // Animate out and redirect
+      document.querySelector('.login-wrap').style.opacity = '0';
+      document.querySelector('.login-wrap').style.transform = 'scale(0.97)';
+      document.querySelector('.login-wrap').style.transition = 'all 0.4s ease';
+      setTimeout(() => { window.location.href = 'dashboard.html'; }, 400);
+    }
+
+    // Allow Enter key login
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleLogin();
+    });
+  </script>
+</body>
+</html>
